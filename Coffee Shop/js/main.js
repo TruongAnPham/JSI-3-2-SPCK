@@ -254,3 +254,86 @@ const initApp = () => {
     })
 }
 initApp();
+
+document.addEventListener("DOMContentLoaded", function () {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const sections = document.querySelectorAll('.product-section');
+  
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const sectionId = item.getAttribute('data-section');
+        const targetSection = document.getElementById(sectionId);
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  
+    window.addEventListener('scroll', () => {
+      let currentSection = '';
+  
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+  
+        if (pageYOffset >= sectionTop - sectionHeight / 2) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+  
+      menuItems.forEach(item => {
+        const sectionId = item.getAttribute('data-section');
+        if (sectionId === currentSection) {
+          item.style.color = '#3498db';
+        } else {
+          item.style.color = '';
+        }
+      });
+    });
+  });
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuContainer = document.getElementById('menu-container');
+    const menuList = document.getElementById('menu-list');
+    const menuItems = document.querySelectorAll('.menu-item');
+    const sections = document.querySelectorAll('.product-section');
+  
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const sectionId = item.getAttribute('data-section');
+        const targetSection = document.getElementById(sectionId);
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  
+    window.addEventListener('scroll', () => {
+      let currentSection = '';
+  
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+  
+        if (pageYOffset >= sectionTop - sectionHeight / 2) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+  
+      menuItems.forEach(item => {
+        const sectionId = item.getAttribute('data-section');
+        if (sectionId === currentSection) {
+          item.style.color = '#3498db';
+        } else {
+          item.style.color = '';
+        }
+      });
+  
+      // Stick menu-container to the top or bottom based on scroll direction
+      if (window.scrollY > 0) {
+        menuContainer.style.top = '0';
+        menuContainer.style.bottom = '';
+      } else {
+        menuContainer.style.top = '';
+        menuContainer.style.bottom = '0';
+      }
+    });
+  });
+  
+  
