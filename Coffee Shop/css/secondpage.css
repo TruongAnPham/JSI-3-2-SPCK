@@ -9,6 +9,7 @@ body{
     width: 100%;
     height: auto;
     display: flex;
+    transition: .4s;
 }
 
 .sidebar{
@@ -28,6 +29,7 @@ body{
 .sidebar-menus{
     display: flex;
     flex-direction: column;
+    transition: .4s linear;
 
 }
 
