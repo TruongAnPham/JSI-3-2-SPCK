@@ -10,6 +10,7 @@ let itemUpdateId = null;
 
 const getEle = (id) => document.getElementById(id);
 
+// Render function
 const renderUI = (data) => {
   let content = "";
   if (data && data.length > 0) {
@@ -32,6 +33,8 @@ const renderUI = (data) => {
     </tr>
     `;
     });
+  } else {
+    content = "<tr><td colspan='7'>No items found</td></tr>";
   }
   const tbodyitem = getEle("tbodyitem");
   if (tbodyitem) {
@@ -40,6 +43,27 @@ const renderUI = (data) => {
     console.error("Element with ID 'tbodyitem' not found.");
   }
 };
+
+// Function to fetch items
+const getItemList = async () => {
+  try {
+    const result = await api.callApi("coffee", "get", null);
+    renderUI(result);
+  } catch (error) {
+    console.error("Error fetching items:", error);
+  }
+};
+
+// Initial load
+window.onload = getItemList;
+
+// Event listeners
+getEle("btnAdditem").addEventListener("click", addItem);
+getEle("btnAdd").addEventListener("click", () => {
+  getEle("btnAdditem").style.display = "block";
+  getEle("btnUpdate").style.display = "none";
+  document.getElementById("modal__form").reset();
+});
 
 const getItemInfo = () => {
   let name = getEle("name").value;
@@ -84,12 +108,12 @@ const getItemInfo = () => {
   isValid &=
     validate.kiemTraRong(
       ingredient,
-      "tbFC",
+      "tbIngredient",
       "(*) Vui lòng thêm nguyên liệu"
     ) &&
     validate.kiemTraDoDaiKiTu(
       ingredient,
-      "tbFC",
+      "tbIngredient",
       "(*) Vui lòng nhập 2-30 kí tự",
       2,
       30
@@ -148,6 +172,8 @@ const addItem = () => {
     .catch((err) => console.log(err));
 };
 
+
+
 const editItem = (id) => {
   getEle("btnAdditem").style.display = "none";
   getEle("btnUpdate").style.display = "block";
@@ -166,6 +192,7 @@ const editItem = (id) => {
 
 window.editItem = editItem;
 
+// Function to remove an item
 const removeItem = async (id) => {
   const result = await api.callApi(`coffee/${id}`, "delete", null); // Adjusted endpoint
   let res = await CustomModal.alertDelete(
