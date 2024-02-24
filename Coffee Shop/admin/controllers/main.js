@@ -1,16 +1,14 @@
 import Api from "../services/api.js";
 import item from "../models/item.js";
 import { CustomModal } from "./utils.js";
-import Validation from "../models/validation.js";
-
+import Validation from "./../models/validation.js";
 
 const api = new Api();
-const validate = new Validation(); // Fix: Add 'new' keyword to initialize the Validation object
+const validate = new Validation();
 let itemUpdateId = null;
 
 const getEle = (id) => document.getElementById(id);
 
-// Render function
 const renderUI = (data) => {
   let content = "";
   if (data && data.length > 0) {
@@ -33,8 +31,6 @@ const renderUI = (data) => {
     </tr>
     `;
     });
-  } else {
-    content = "<tr><td colspan='7'>No items found</td></tr>";
   }
   const tbodyitem = getEle("tbodyitem");
   if (tbodyitem) {
@@ -42,28 +38,8 @@ const renderUI = (data) => {
   } else {
     console.error("Element with ID 'tbodyitem' not found.");
   }
+  // getEle("tbodyitem").innerHTML = content;
 };
-
-// Function to fetch items
-const getItemList = async () => {
-  try {
-    const result = await api.callApi("coffee", "get", null);
-    renderUI(result);
-  } catch (error) {
-    console.error("Error fetching items:", error);
-  }
-};
-
-// Initial load
-window.onload = getItemList;
-
-// Event listeners
-getEle("btnAdditem").addEventListener("click", addItem);
-getEle("btnAdd").addEventListener("click", () => {
-  getEle("btnAdditem").style.display = "block";
-  getEle("btnUpdate").style.display = "none";
-  document.getElementById("modal__form").reset();
-});
 
 const getItemInfo = () => {
   let name = getEle("name").value;
@@ -134,45 +110,53 @@ const getItemInfo = () => {
   return newItem;
 };
 
-// const getInforItem = () => {
-//   const name = getEle("name").value;
-//   const description = getEle("description").value;
-//   const price = getEle("price").value;
-//   const image = getEle("image").value;
-//   const ingredient = getEle("ingredient").value;
+const getItemList = () => {
+  api
+    .callApi("coffee", "get", null) // Adjusted endpoint to match the mock API
+    .then((result) => renderUI(result))
+    .catch((err) => console.log(err));
+};
+getItemList();
 
-//   return {
-//     name: name,
-//     description: description,
-//     price: price,
-//     image: image,
-//     ingredient: ingredient
-//   };
+// const addItem = () => {
+//   let newItem = getItemInfo(); // Renamed variable to avoid naming conflict
+//   if (!newItem) return;
+
+//   api
+//     .callApi("coffee", "post", newItem)
+//     .then(() => {
+//       getItemList(); // Corrected function name
+//       CustomModal.alertSuccess("Add item successfully");
+//       document.getElementsByClassName("close")[0].click();
+//     })
+//     .catch((err) => console.log(err));
 // };
 
 const addItem = () => {
   let item = getItemInfo();
   if (!item) return;
+
+  // Use validation methods from the Validation object
   const isValidName = validate.kiemTraRong(item.name, "tbPN", "(*) Vui lòng nhập tên");
   const isValidDescription = validate.kiemTraRong(item.description, "tbDescription", "(*) Vui lòng nhập mô tả");
   const isValidPrice = validate.kiemTraRong(item.price, "tbPrice", "(*) Vui lòng nhập giá");
   const isValidImage = validate.kiemTraRong(item.image, "tbIL", "(*) Vui lòng thêm hình ảnh");
-  const isValidIngredient = validate.kiemTraRong(item.ingredient, "tbFC", "(*) Vui lòng thêm nguyên liệu");
+  const isValidIngredient = validate.kiemTraRong(item.ingredient, "tbIngredient", "(*) Vui lòng thêm nguyên liệu");
 
   if (!isValidName || !isValidDescription || !isValidPrice || !isValidImage || !isValidIngredient) {
     return;
   }
+
+  // If all validations pass, proceed with adding the item
   api
     .callApi("coffee", "post", item)
     .then(() => {
-      getItemList();
+      getListitem();
       CustomModal.alertSuccess("Add item successfully");
       document.getElementsByClassName("close")[0].click();
     })
     .catch((err) => console.log(err));
 };
-
-
 
 const editItem = (id) => {
   getEle("btnAdditem").style.display = "none";
@@ -190,25 +174,24 @@ const editItem = (id) => {
     .catch((err) => console.log(err));
 };
 
-window.editItem = editItem;
+window.editItem = editItem; // Updated function name
 
-// Function to remove an item
 const removeItem = async (id) => {
   const result = await api.callApi(`coffee/${id}`, "delete", null); // Adjusted endpoint
   let res = await CustomModal.alertDelete(
     `This item will be deleted, you can't undo this action`
   );
   if (res.isConfirmed) {
-    getItemList();
+    getItemList(); // Corrected function name
     CustomModal.alertSuccess(`Delete item successfully`);
     document.getElementsByClassName("close")[0].click();
   }
 };
 
-window.removeItem = removeItem;
+window.removeItem = removeItem; // Updated function name
 
 getEle("btnAdditem").onclick = function () {
-  addItem();
+  addItem(); // Corrected function name
 };
 
 getEle("btnAdd").onclick = function () {
